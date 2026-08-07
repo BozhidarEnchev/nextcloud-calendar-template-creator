@@ -12,6 +12,9 @@ class User(Base):
         nullable=False,
         unique=True
     )
+    hashed_password: Mapped[str] = mapped_column(
+        nullable=False
+    )
     full_name: Mapped[str] = mapped_column(
         nullable=True
     )
