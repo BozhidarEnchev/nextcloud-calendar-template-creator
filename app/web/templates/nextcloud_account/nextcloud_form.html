@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Nextcloud account{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-4">
+
+    {% if error %}
+      <p class="text-danger">{{ error }}</p>
+    {% endif %}
+
+    {% if test_result is defined and test_result is not none %}
+      {% if test_result %}
+        <p class="text-success">Connection successful.</p>
+      {% else %}
+        <p class="text-danger">Could not connect with these credentials.</p>
+      {% endif %}
+    {% endif %}
+
+    {% if nc_acc %}
+      <p>Currently connected as <strong>{{ nc_acc.username }}</strong>.</p>
+    {% else %}
+      <p>No Nextcloud account connected yet.</p>
+    {% endif %}
+
+    <form method="post" action="{{ url_for('nextcloud_account') }}">
+      <div class="mb-3">
+        <label for="username-field" class="form-label">Nextcloud username</label>
+        <input type="text" name="username" class="form-control" id="username-field"
+               value="{{ nc_acc.username if nc_acc else '' }}">
+      </div>
+      <div class="mb-3">
+        <label for="password-field" class="form-label">App password</label>
+        <input type="password" name="password" class="form-control" id="password-field">
+      </div>
+      <button type="submit" class="btn btn-success">
+        {{ "Update account" if nc_acc else "Add account" }}
+      </button>
+    </form>
+
+    {% if nc_acc %}
+      <form method="get" action="{{ url_for('nextcloud_account_test') }}" class="mt-2 d-inline">
+        <button type="submit" class="btn btn-secondary">Test connection</button>
+      </form>
+      <form method="post" action="{{ url_for('nextcloud_account_delete') }}" class="mt-2 d-inline">
+        <button type="submit" class="btn btn-danger">Disconnect account</button>
+      </form>
+    {% endif %}
+    <a href="{{ url_for('index') }}" class="d-block pt-2 text-decoration-none">Back to home</a>
+  </div>
+</div>
+{% endblock %}

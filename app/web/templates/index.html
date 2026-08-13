@@ -9,5 +9,10 @@
 <form method="post" action="/users/logout">
   <button type="submit" class="btn btn-warning">Log out</button>
 </form>
+{% if current_user.nextcloud_account %}
+  <p><a href="/nextcloud-account">Nextcloud: connected as {{ current_user.nextcloud_account.username }}</a></p>
+{% else %}
+  <p><a href="/nextcloud-account">Connect your Nextcloud account</a></p>
+{% endif %}
 
 {% endblock %}
