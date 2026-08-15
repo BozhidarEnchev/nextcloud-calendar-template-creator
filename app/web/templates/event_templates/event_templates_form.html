@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+
+{% block title %}{{ "Edit template" if event_template else "New template" }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-6">
+
+    {% if error %}
+      <p class="text-danger">{{ error }}</p>
+    {% endif %}
+
+    <form method="post"
+          action="{{ url_for('event_template_update', template_id=event_template.id) if event_template else url_for('event_templates_create') }}">
+      <div class="mb-3">
+        <label for="name-field" class="form-label">Template name</label>
+        <input type="text" name="name" class="form-control" id="name-field"
+               value="{{ event_template.name if event_template else '' }}">
+      </div>
+      <button type="submit" class="btn btn-success">
+        {{ "Save name" if event_template else "Create template" }}
+      </button>
+    </form>
+
+    {% if event_template %}
+      <hr>
+      <h5>Events in this template</h5>
+
+      <ul id="items-list" class="list-group mb-3">
+        {% for item in event_template.items %}
+          {% include "event_templates/_item_row.html" %}
+        {% endfor %}
+      </ul>
+
+      <form
+        hx-post="{{ url_for('event_template_items_create', template_id=event_template.id) }}"
+        hx-target="#items-list"
+        hx-swap="beforeend"
+        hx-on::after-request="if(event.detail.successful) this.reset()"
+      >
+        <div class="row g-2">
+          <div class="col-12 col-md-3">
+            <input type="text" name="title" class="form-control" placeholder="Title (e.g. Bus to work)" required>
+          </div>
+          <div class="col-6 col-md-2">
+            <input type="time" name="start_time" class="form-control" required>
+          </div>
+          <div class="col-6 col-md-2">
+            <input type="time" name="end_time" class="form-control" required>
+          </div>
+          <div class="col-12 col-md-2">
+            <input type="text" name="location" class="form-control" placeholder="Location (optional)">
+          </div>
+          <div class="col-12 col-md-2">
+            <select name="calendar_url" class="form-select" required>
+              <option value="" disabled selected>Calendar</option>
+              {% for calendar in calendars %}
+                <option value="{{ calendar.url }}">{{ calendar.name }}</option>
+              {% endfor %}
+                <option value="123">NAME</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Add</button>
+          </div>
+        </div>
+        <div class="mt-2">
+          <input type="text" name="description" class="form-control" placeholder="Description (optional)">
+        </div>
+      </form>
+    {% else %}
+      <p class="text-muted mt-3">Save the template name first, then you can add its events.</p>
+    {% endif %}
+
+    <a href="{{ url_for('event_templates') }}" class="d-block pt-3 text-decoration-none">Back to templates</a>
+  </div>
+</div>
+{% endblock %}

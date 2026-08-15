@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Event templates{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-6">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h4 class="mb-0">Your event templates</h4>
+      <a href="{{ url_for('event_templates_new') }}" class="btn btn-success btn-sm">+ New template</a>
+    </div>
+
+    {% if event_templates %}
+      <ul id="templates-list" class="list-group">
+        {% for template in event_templates %}
+          <li id="template-{{ template.id }}" class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ url_for('event_template_edit', template_id=template.id) }}" class="text-decoration-none">
+              {{ template.name }}
+            </a>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-danger"
+              hx-delete="{{ url_for('event_template_delete', template_id=template.id) }}"
+              hx-target="#template-{{ template.id }}"
+              hx-swap="outerHTML"
+              hx-confirm="Delete '{{ template.name }}' and all its events?"
+            >
+              Delete
+            </button>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-muted">No templates yet &mdash; create one to get started.</p>
+    {% endif %}
+
+    <a href="{{ url_for('index') }}" class="d-block pt-3 text-decoration-none">Back to home</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+<li id="item-{{ item.id }}" class="list-group-item d-flex justify-content-between align-items-center">
+  <div>
+    <strong>{{ item.title }}</strong>
+    &mdash; {{ item.start_time.strftime('%H:%M') }}&ndash;{{ item.end_time.strftime('%H:%M') }}
+    {% if item.location %} @ {{ item.location }}{% endif %}
+  </div>
+  <button
+    type="button"
+    class="btn btn-sm btn-outline-danger"
+    hx-delete="{{ url_for('event_template_item_delete', template_id=event_template.id, item_id=item.id) }}"
+    hx-target="#item-{{ item.id }}"
+    hx-swap="outerHTML"
+    hx-confirm="Delete this event?"
+  >
+    Delete
+  </button>
+</li>

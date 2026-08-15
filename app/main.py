@@ -10,7 +10,7 @@ from app.database import Base, engine
 from app.dependencies import require_login
 from app.models.user import User
 
-from .routers import auth, nextcloud_account
+from .routers import auth, event_templates, nextcloud_account
 from .templating import templates
 
 
@@ -28,6 +28,7 @@ app.add_middleware(SessionMiddleware, secret_key=config("SECRET_KEY"))
 app.mount("/static", StaticFiles(directory="app/web/static"), name="static")
 app.include_router(router=auth.router)
 app.include_router(router=nextcloud_account.router)
+app.include_router(router=event_templates.router)
 
 
 @app.get("/", response_class=HTMLResponse, name="index")
