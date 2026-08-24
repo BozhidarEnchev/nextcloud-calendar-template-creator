@@ -8,7 +8,7 @@ from app.dependencies import require_login
 from app.models.nextcloud_account import NextcloudAccount
 from app.models.user import User
 from app.templating import templates
-from app.security import decrypt_secret, encrypt_secret
+from app.security import encrypt_secret
 
 router = APIRouter(prefix="/nextcloud-account")
 
@@ -85,7 +85,7 @@ async def test_nextcloud_connection(
             context={"nc_acc": None, "error": "No Nextcloud account connected yet."},
         )
 
-    test_result = test_connection(nc_acc.username, decrypt_secret(nc_acc.encrypted_password))
+    test_result = test_connection(nc_acc.username, nc_acc.encrypted_password)
 
     return templates.TemplateResponse(
         request=request,
