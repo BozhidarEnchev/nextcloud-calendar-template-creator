@@ -159,6 +159,19 @@ async def delete_event_template(
         )
     )
 
+    if event_template is None:
+        return templates.TemplateResponse(
+            request=request,
+            name="errors/message.html",
+            context={
+                "heading": "Template not found",
+                "message": "This template doesn't exist or isn't yours.",
+                "link_url": request.url_for("event_templates"),
+                "link_text": "Back to templates",
+            },
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
     db.delete(event_template)
     db.commit()
 
