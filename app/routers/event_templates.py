@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, Form, Request, status
 from fastapi.responses import RedirectResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from app.caldav_client import get_user_calendars
 from app.database import get_db
 from app.dependencies import require_login
 from app.models.event_template import EventTemplate
@@ -67,6 +68,21 @@ async def edit_event_template(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_login),
 ):
+    if current_user.nextcloud_account is None:
+        return templates.TemplateResponse(
+            request=request,
+            name="errors/message.html",
+            context={
+                "heading": "No Nextcloud account added!",
+                "message": "Add account before you continue!",
+                "link_url": request.url_for("nextcloud_account"),
+                "link_text": "Connect Nextcloud account",
+            },
+            status_code=status.HTTP_403_FORBIDDEN,
+        )
+
+    context = {}
+
     event_template = db.scalar(
         select(EventTemplate).where(
             EventTemplate.id == template_id,
@@ -74,10 +90,33 @@ async def edit_event_template(
         )
     )
 
+    if event_template is None:
+        return templates.TemplateResponse(
+            request=request,
+            name="errors/message.html",
+            context={
+                "heading": "Template not found",
+                "message": "This template doesn't exist or isn't yours.",
+                "link_url": request.url_for("event_templates"),
+                "link_text": "Back to templates",
+            },
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
+
+    context["event_template"] = event_template
+    context["calendars"] = []
+
+    calendars = get_user_calendars(
+        caldav_user=current_user.nextcloud_account.username,
+        app_pasword=current_user.nextcloud_account.encrypted_password
+    )
+    if calendars:
+        context["calendars"] = calendars
+
     return templates.TemplateResponse(
         request=request,
         name="event_templates/event_templates_form.html",
-        context={"event_template": event_template},
+        context=context,
         status_code=status.HTTP_200_OK,
     )
 
