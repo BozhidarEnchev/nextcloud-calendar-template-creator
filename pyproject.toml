@@ -17,6 +17,7 @@ dependencies = [
     "pydantic-settings",
     "itsdangerous",
     "python-decouple>=3.8",
+    "psycopg2-binary>=2.9.12",
 ]
 
 [dependency-groups]
