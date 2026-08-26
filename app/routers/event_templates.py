@@ -136,7 +136,7 @@ async def update_event_template(
         )
     )
     if not event_template:
-        return RedirectResponse(url=request.url_for("event_templates", status_code=status.HTTP_303_SEE_OTHER))
+        return RedirectResponse(url=request.url_for("event_templates"), status_code=status.HTTP_303_SEE_OTHER)
 
     if name:
         event_template.name = name
@@ -202,9 +202,9 @@ async def new_event_template_item(
     )
     template = db.scalar(select(EventTemplate).where(EventTemplate.id == template_id))
     if not template:
-        return RedirectResponse(url=request.url_for("event_templates"))
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
     if template.user_id != current_user.id:
-        return RedirectResponse(url=request.url_for("event_template_edit", template_id=template_id))
+        return Response(status_code=status.HTTP_404_NOT_FOUND)
 
     db.add(event_template_item)
     db.commit()
