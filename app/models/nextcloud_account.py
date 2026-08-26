@@ -17,7 +17,7 @@ class NextcloudAccount(Base):
         nullable=False,
     )
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("user.id"),
+        ForeignKey("user.id", ondelete="CASCADE"),
         nullable=False,
         unique=True,
     )

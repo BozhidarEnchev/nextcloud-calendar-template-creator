@@ -33,7 +33,7 @@ class EventTemplateItem(Base):
         nullable=False,
     )
     template_id: Mapped[int] = mapped_column(
-        ForeignKey("event_template.id"),
+        ForeignKey("event_template.id", ondelete="CASCADE"),
         nullable=False,
     )
     template: Mapped["EventTemplate"] = relationship(

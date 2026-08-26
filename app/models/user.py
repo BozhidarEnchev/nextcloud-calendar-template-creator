@@ -21,6 +21,7 @@ class User(Base):
     nextcloud_account: Mapped["NextcloudAccount | None"] = relationship(
         back_populates="user",
         uselist=False,
+        passive_deletes=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         default=lambda: datetime.now(timezone.utc)

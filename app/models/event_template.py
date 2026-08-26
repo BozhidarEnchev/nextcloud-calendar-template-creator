@@ -1,4 +1,5 @@
 from datetime import datetime, timezone
+from typing import List
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
@@ -15,11 +16,12 @@ class EventTemplate(Base):
         nullable=False,
     )
     user_id: Mapped[int] = mapped_column(
-        ForeignKey("user.id"),
+        ForeignKey("user.id", ondelete="cascade"),
         nullable=False,
     )
-    items: Mapped[list["EventTemplateItem"]] = relationship(
+    items: Mapped[List["EventTemplateItem"]] = relationship(
         back_populates="template",
+        passive_deletes=True,
     )
     created_at: Mapped[datetime] = mapped_column(
         default=lambda: datetime.now(timezone.utc)
