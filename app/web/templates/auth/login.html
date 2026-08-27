@@ -17,7 +17,7 @@
       <input type="password" name="password" class="form-control" id="password-field">
     </div>
     <button type="submit" class="btn btn-success">Login</button>
-    <a class="d-block pt-2 text-decoration-none" href="./register">No account? Click to register!</a>
+    <a class="d-block pt-2 text-decoration-none" href="{{ url_for('register-page') }}">No account? Click to register!</a>
   </form>
 </div>
 {% endblock %}

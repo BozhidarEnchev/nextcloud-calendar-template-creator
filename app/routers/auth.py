@@ -11,14 +11,14 @@ from app.templating import templates
 router = APIRouter(prefix="/users")
 
 
-@router.get("/register", response_class=HTMLResponse)
+@router.get("/register", name="register-page", response_class=HTMLResponse)
 async def get_register(request: Request):
     return templates.TemplateResponse(
         request=request, name="auth/register.html", context={},
     )
 
 
-@router.post("/register")
+@router.post("/register", name="register")
 async def post_register(
     request: Request,
     username: str = Form(...),
@@ -40,17 +40,17 @@ async def post_register(
     db.refresh(user)
 
     request.session["user_id"] = user.id
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url=request.url_for("index"), status_code=status.HTTP_303_SEE_OTHER)
 
 
-@router.get("/login", response_class=HTMLResponse)
+@router.get("/login", name="login-page", response_class=HTMLResponse)
 async def get_login(request: Request):
     return templates.TemplateResponse(
         request=request, name="auth/login.html", context={},
     )
 
 
-@router.post("/login")
+@router.post("/login", name="login")
 async def post_login(
     request: Request,
     username: str = Form(...),
@@ -67,11 +67,11 @@ async def post_login(
         )
 
     request.session["user_id"] = user.id
-    return RedirectResponse(url="/", status_code=status.HTTP_303_SEE_OTHER)
+    return RedirectResponse(url=request.url_for("index"), status_code=status.HTTP_303_SEE_OTHER)
 
 
-@router.post("/logout")
+@router.post("/logout", name="logout")
 async def post_logout(request: Request):
     request.session.clear()
-    return RedirectResponse(url="/users/login",
+    return RedirectResponse(url=request.url_for("login-page"),
                             status_code=status.HTTP_303_SEE_OTHER)

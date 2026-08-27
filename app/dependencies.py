@@ -12,10 +12,10 @@ def get_current_user(request: Request, db: Session = Depends(get_db)) -> User | 
     return db.get(User, user_id)
 
 
-def require_login(user: User | None = Depends(get_current_user)) -> User:
+def require_login(request: Request, user: User | None = Depends(get_current_user)) -> User:
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_303_SEE_OTHER,
-            headers={"Location": "/users/login"},
+            headers={"Location": str(request.url_for("login-page"))},
         )
     return user
