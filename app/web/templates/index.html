@@ -12,6 +12,28 @@
 {% if current_user.nextcloud_account %}
   <p><a href="{{ url_for('nextcloud_account') }}">Nextcloud: connected as {{ current_user.nextcloud_account.username }}</a></p>
   <p><a href="{{ url_for('event_templates') }}">Templates</a></p>
+
+  {% if event_templates %}
+    <hr>
+    <h5>Create events from a template</h5>
+    <form method="post" action="{{ url_for('events_create') }}" class="row g-2 align-items-end">
+      <div class="col-auto">
+        <label for="template-field" class="form-label">Template</label>
+        <select name="template_id" id="template-field" class="form-select" required>
+          {% for template in event_templates %}
+            <option value="{{ template.id }}">{{ template.name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="col-auto">
+        <label for="date-field" class="form-label">Date</label>
+        <input type="date" name="event_date" id="date-field" class="form-control" required>
+      </div>
+      <div class="col-auto">
+        <button type="submit" class="btn btn-success">Create events</button>
+      </div>
+    </form>
+  {% endif %}
 {% else %}
   <p><a href="{{ url_for('nextcloud_account') }}">Connect your Nextcloud account</a></p>
 {% endif %}

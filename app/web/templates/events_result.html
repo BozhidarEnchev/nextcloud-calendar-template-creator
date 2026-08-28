@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Events created{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-6">
+    <h4>"{{ template.name }}" for {{ event_date.strftime('%Y-%m-%d') }}</h4>
+
+    <ul class="list-group mb-3">
+      {% for result in results %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          {{ result.item.title }}
+          {% if result.success %}
+            <span class="badge bg-success">Created</span>
+          {% else %}
+            <span class="badge bg-danger">Failed</span>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+
+    <a href="{{ url_for('index') }}" class="d-block pt-2 text-decoration-none">Back to home</a>
+  </div>
+</div>
+{% endblock %}
