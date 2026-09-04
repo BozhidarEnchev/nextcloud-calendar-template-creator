@@ -1,4 +1,4 @@
-from tests.conftest import client, register
+from tests.conftest import register
 
 
 def test_register_new_user_can_access_index(client):
