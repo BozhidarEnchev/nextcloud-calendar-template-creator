@@ -10,7 +10,8 @@ wheels/
 .venv
 
 # Tool caches and settings
-.ruff_cache
+.ruff_cache/
+.pytest_cache/
 
 # Project files
 data/
