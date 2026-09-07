@@ -1,3 +1,5 @@
+from sqlalchemy import select
+
 from app.models.event_template import EventTemplate
 from app.models.event_template_item import EventTemplateItem
 from tests.conftest import connect_nextcloud_account, register
@@ -9,7 +11,7 @@ def _create_template(client, name="Owner's template") -> None:
 
 
 def _template_id(db_session, name: str) -> int:
-    template = db_session.query(EventTemplate).filter(EventTemplate.name == name).one()
+    template = db_session.scalars(select(EventTemplate).where(EventTemplate.name == name)).one()
     return template.id
 
 
@@ -68,8 +70,8 @@ def test_template_update_blocks_non_owner(make_client, db_session, mock_caldav):
     resp = attacker.post(f"/event-templates/{template_id}", data={"name": "Hijacked name"})
     assert resp.status_code in (303, 200)  # redirects, doesn't 500
 
-    db_session.refresh(db_session.query(EventTemplate).filter(EventTemplate.id == template_id).one())
-    template = db_session.query(EventTemplate).filter(EventTemplate.id == template_id).one()
+    db_session.refresh(db_session.scalar(select(EventTemplate).where(EventTemplate.id == template_id)))
+    template = db_session.scalar(select(EventTemplate).where(EventTemplate.id == template_id))
     assert template.name == "Update-target template"  # unchanged
 
 
@@ -85,7 +87,7 @@ def test_template_delete_blocks_non_owner(make_client, db_session, mock_caldav):
     resp = attacker.delete(f"/event-templates/{template_id}")
     assert resp.status_code == 404
 
-    still_there = db_session.query(EventTemplate).filter(EventTemplate.id == template_id).one_or_none()
+    still_there = db_session.scalar(select(EventTemplate).where(EventTemplate.id == template_id))
     assert still_there is not None
 
 
@@ -111,7 +113,7 @@ def test_item_create_blocks_non_owner(make_client, db_session, mock_caldav):
     )
     assert resp.status_code == 404
 
-    items = db_session.query(EventTemplateItem).filter(EventTemplateItem.template_id == template_id).all()
+    items = db_session.scalars(select(EventTemplateItem).where(EventTemplateItem.template_id == template_id)).all()
     assert items == []
 
 
@@ -121,7 +123,7 @@ def test_item_delete_blocks_non_owner(make_client, db_session, mock_caldav):
     _create_template(owner, "Item-delete-target template")
     template_id = _template_id(db_session, "Item-delete-target template")
     _create_item(owner, template_id)
-    item = db_session.query(EventTemplateItem).filter(EventTemplateItem.template_id == template_id).one()
+    item = db_session.scalars(select(EventTemplateItem).where(EventTemplateItem.template_id == template_id)).one()
 
     attacker = make_client()
     register(attacker, "itemdelete_attacker")
@@ -129,7 +131,7 @@ def test_item_delete_blocks_non_owner(make_client, db_session, mock_caldav):
     resp = attacker.delete(f"/event-templates/{template_id}/items/{item.id}")
     assert resp.status_code == 404
 
-    still_there = db_session.query(EventTemplateItem).filter(EventTemplateItem.id == item.id).one_or_none()
+    still_there = db_session.scalar(select(EventTemplateItem).where(EventTemplateItem.id == item.id))
     assert still_there is not None
 
 

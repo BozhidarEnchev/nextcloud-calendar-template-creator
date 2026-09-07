@@ -1,3 +1,5 @@
+from sqlalchemy import select
+
 from app.models.nextcloud_account import NextcloudAccount
 from tests.conftest import connect_nextcloud_account, register
 
@@ -27,7 +29,7 @@ def test_delete_nextcloud_account(client, db_session):
     assert response.status_code == 200
     response = client.get("/nextcloud-account", follow_redirects=False)
     assert "No Nextcloud account connected yet." in response.text
-    accounts = db_session.query(NextcloudAccount).all()
+    accounts = db_session.scalars(select(NextcloudAccount)).all()
     assert len(accounts) == 0
 
 
@@ -35,7 +37,7 @@ def test_update_nextcloud_account(client, db_session):
     register(client, "testuser", "testpassword")
     connect_nextcloud_account(client, "ncuser", "ncpass")
 
-    original = db_session.query(NextcloudAccount).one()
+    original = db_session.scalars(select(NextcloudAccount)).one()
     original_id = original.id
     original_encrypted_password = original.encrypted_password
 
@@ -46,7 +48,7 @@ def test_update_nextcloud_account(client, db_session):
     )
     assert response.status_code == 200
 
-    accounts = db_session.query(NextcloudAccount).all()
+    accounts = db_session.scalars(select(NextcloudAccount)).all()
     assert len(accounts) == 1
     assert accounts[0].id == original_id
     assert accounts[0].username == "newuser"
