@@ -20,7 +20,7 @@ async def get_event_templates(
     db: Session = Depends(get_db),
     current_user: User = Depends(require_login),
 ):
-    event_templates = db.scalars(select(EventTemplate).where(EventTemplate.user_id == current_user.id))
+    event_templates = db.scalars(select(EventTemplate).where(EventTemplate.user_id == current_user.id)).all()
 
     return templates.TemplateResponse(
         request=request,
