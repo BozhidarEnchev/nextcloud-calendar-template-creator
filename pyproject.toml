@@ -14,7 +14,6 @@ dependencies = [
     "icalendar",
     "argon2-cffi",
     "cryptography",
-    "pydantic-settings",
     "itsdangerous",
     "python-decouple>=3.8",
     "psycopg2-binary>=2.9.12",
@@ -26,3 +25,6 @@ dev = [
     "pytest",
     "httpx",
 ]
+
+[tool.ruff.lint]
+ignore = ["B008", "F821", "UP037"]
