@@ -1,6 +1,6 @@
+from decouple import config
 from sqlalchemy import create_engine
 from sqlalchemy.orm import DeclarativeBase, sessionmaker
-from decouple import config
 
 
 class Base(DeclarativeBase):

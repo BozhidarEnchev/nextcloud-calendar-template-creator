@@ -3,6 +3,7 @@ from sqlalchemy import select
 from app.models.nextcloud_account import NextcloudAccount
 from tests.conftest import connect_nextcloud_account, register
 
+
 def test_get_nextcloud_account_page_with_no_connected_account(client):
     register(client, "testuser", "testpassword")
     response = client.get("/nextcloud-account")

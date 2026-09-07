@@ -1,6 +1,6 @@
 from contextlib import asynccontextmanager
-from decouple import config
 
+from decouple import config
 from fastapi import Depends, FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles

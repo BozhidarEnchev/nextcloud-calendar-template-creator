@@ -1,8 +1,10 @@
 from datetime import time
+
 from fastapi import APIRouter, Depends, Form, Request, status
 from fastapi.responses import RedirectResponse, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
 from app.caldav_client import get_user_calendars
 from app.database import get_db
 from app.dependencies import require_login

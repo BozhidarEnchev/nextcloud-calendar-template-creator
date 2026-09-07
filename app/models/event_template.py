@@ -1,7 +1,8 @@
-from datetime import datetime, timezone
-from typing import List
+from datetime import UTC, datetime
+
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+
 from app.database import Base
 
 
@@ -19,10 +20,10 @@ class EventTemplate(Base):
         ForeignKey("user.id", ondelete="cascade"),
         nullable=False,
     )
-    items: Mapped[List["EventTemplateItem"]] = relationship(
+    items: Mapped[list["EventTemplateItem"]] = relationship(
         back_populates="template",
         passive_deletes=True,
     )
     created_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(UTC)
     )

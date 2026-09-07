@@ -1,5 +1,4 @@
-from datetime import datetime, timezone, time
-from typing import Optional
+from datetime import UTC, datetime, time
 
 from sqlalchemy import ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -17,10 +16,10 @@ class EventTemplateItem(Base):
     title: Mapped[str] = mapped_column(
         nullable=False,
     )
-    description: Mapped[Optional[str]] = mapped_column(
+    description: Mapped[str | None] = mapped_column(
         nullable=True,
     )
-    location: Mapped[Optional[str]] = mapped_column(
+    location: Mapped[str | None] = mapped_column(
         nullable=True,
     )
     start_time: Mapped[time] = mapped_column(
@@ -41,5 +40,5 @@ class EventTemplateItem(Base):
     )
 
     created_at: Mapped[datetime] = mapped_column(
-        default=lambda: datetime.now(timezone.utc)
+        default=lambda: datetime.now(UTC)
     )

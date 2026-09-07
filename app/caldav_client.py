@@ -1,12 +1,13 @@
-from datetime import date, datetime, timezone
-from typing import List
+from datetime import UTC, date, datetime
 from uuid import uuid4
-from decouple import config
-import caldav
-from icalendar import Calendar as ICalendar, Event as ICalEvent
-from app.security import decrypt_secret
-from app.models.event_template_item import EventTemplateItem
 
+import caldav
+from decouple import config
+from icalendar import Calendar as ICalendar
+from icalendar import Event as ICalEvent
+
+from app.models.event_template_item import EventTemplateItem
+from app.security import decrypt_secret
 
 SERVER_URL = config("SERVER_URL")
 
@@ -21,18 +22,14 @@ def test_connection(caldav_user: str, app_pasword: bytes) -> bool:
         client.principal()
     except caldav.lib.error.DAVError:
         return False
-    except Exception:
-        return False
     return True
 
 
-def get_user_calendars(caldav_user: str, app_pasword: bytes) -> List[caldav.collection.Calendar] | False:
+def get_user_calendars(caldav_user: str, app_pasword: bytes) -> list[caldav.collection.Calendar] | False:
     client = build_client(caldav_user, app_pasword)
     try:
         principal = client.principal()
     except caldav.lib.error.DAVError:
-        return False
-    except Exception:
         return False
     return principal.calendars()
 
@@ -45,7 +42,7 @@ def create_event(caldav_user: str, app_pasword: bytes, item: EventTemplateItem, 
 
         vevent = ICalEvent()
         vevent.add("uid", str(uuid4()))
-        vevent.add("dtstamp", datetime.now(timezone.utc))
+        vevent.add("dtstamp", datetime.now(UTC))
         vevent.add("summary", item.title)
         vevent.add("dtstart", datetime.combine(event_date, item.start_time))
         vevent.add("dtend", datetime.combine(event_date, item.end_time))
@@ -61,7 +58,5 @@ def create_event(caldav_user: str, app_pasword: bytes, item: EventTemplateItem, 
 
         calendar.save_event(ical.to_ical().decode("utf-8"))
     except caldav.lib.error.DAVError:
-        return False
-    except Exception:
         return False
     return True

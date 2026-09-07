@@ -2,13 +2,14 @@ from fastapi import APIRouter, Depends, Form, Request, status
 from fastapi.responses import RedirectResponse
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+
 from app.caldav_client import test_connection
 from app.database import get_db
 from app.dependencies import require_login
 from app.models.nextcloud_account import NextcloudAccount
 from app.models.user import User
-from app.templating import templates
 from app.security import encrypt_secret
+from app.templating import templates
 
 router = APIRouter(prefix="/nextcloud-account")
 
