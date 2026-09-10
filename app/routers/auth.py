@@ -4,6 +4,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import require_login
 from app.models.user import User
 from app.security import hash_password, verify_password
 from app.templating import templates
@@ -75,3 +76,15 @@ async def post_logout(request: Request):
     request.session.clear()
     return RedirectResponse(url=request.url_for("login-page"),
                             status_code=status.HTTP_303_SEE_OTHER)
+
+
+@router.post("/delete", name="user_delete")
+async def delete_user(
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(require_login),
+):
+    db.delete(current_user)
+    db.commit()
+    request.session.clear()
+    return RedirectResponse(url=request.url_for("login-page"), status_code=status.HTTP_303_SEE_OTHER)

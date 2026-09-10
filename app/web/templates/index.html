@@ -6,8 +6,12 @@
 
 <p>Hello, {{ current_user.username }}.</p>
 
-<form method="post" action="{{ url_for('logout') }}">
+<form method="post" action="{{ url_for('logout') }}" class="d-inline">
   <button type="submit" class="btn btn-warning">Log out</button>
+</form>
+<form method="post" action="{{ url_for('user_delete') }}" class="d-inline"
+      onsubmit="return confirm('Delete your account and everything in it? This cannot be undone.');">
+  <button type="submit" class="btn btn-outline-danger">Delete my account</button>
 </form>
 {% if current_user.nextcloud_account %}
   <p><a href="{{ url_for('nextcloud_account') }}">Nextcloud: connected as {{ current_user.nextcloud_account.username }}</a></p>
