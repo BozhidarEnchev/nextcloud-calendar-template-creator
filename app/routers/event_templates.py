@@ -107,11 +107,23 @@ async def edit_event_template(
 
     context["event_template"] = event_template
     context["calendars"] = []
-
-    calendars = get_user_calendars(
-        caldav_user=current_user.nextcloud_account.username,
-        app_pasword=current_user.nextcloud_account.encrypted_password
-    )
+    try:
+        calendars = get_user_calendars(
+            caldav_user=current_user.nextcloud_account.username,
+            app_pasword=current_user.nextcloud_account.encrypted_password
+        )
+    except Exception:
+        return templates.TemplateResponse(
+            request=request,
+            name="errors/message.html",
+            context={
+                "heading": "Problem loading Nextcloud calendars",
+                "message": "There was an error loading your Nextcloud calendars. Please check your Nextcloud account settings and try again.",
+                "link_url": request.url_for("nextcloud_account"),
+                "link_text": "Check Nextcloud account settings",
+            },
+            status_code=status.HTTP_404_NOT_FOUND,
+        )
     if calendars:
         context["calendars"] = calendars
 
