@@ -1,26 +1,45 @@
 {% extends "base.html" %}
+{% set active_page = "home" %}
 
 {% block title %}Events created{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-6">
-    <h4>"{{ template.name }}" for {{ event_date.strftime('%Y-%m-%d') }}</h4>
+{% set created_count = results | selectattr("success") | list | length %}
+{% set all_ok = created_count == results | length %}
+<div class="page-medium">
+  <h1 class="h3 mb-1">{{ "Events created" if all_ok else "Some events could not be created" }}</h1>
+  <p class="text-body-secondary mb-4">
+    &ldquo;{{ template.name }}&rdquo; on {{ event_date.strftime("%A") }}, {{ event_date.day }} {{ event_date.strftime("%B %Y") }}
+    &mdash; {{ created_count }} of {{ results | length }} events added to your calendar.
+  </p>
 
-    <ul class="list-group mb-3">
-      {% for result in results %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          {{ result.item.title }}
-          {% if result.success %}
-            <span class="badge bg-success">Created</span>
-          {% else %}
-            <span class="badge bg-danger">Failed</span>
-          {% endif %}
-        </li>
-      {% endfor %}
-    </ul>
+  {% if not all_ok %}
+    <div class="alert alert-warning" role="alert">
+      Events marked <strong>Failed</strong> were not added. Check your
+      <a href="{{ url_for('nextcloud_account') }}" class="alert-link">Nextcloud connection</a>
+      &mdash; but note that running the template again will re-create the events that did succeed.
+    </div>
+  {% endif %}
 
-    <a href="{{ url_for('index') }}" class="d-block pt-2 text-decoration-none">Back to home</a>
+  <ul class="list-group shadow-sm mb-4">
+    {% for result in results | sort(attribute="item.start_time") %}
+      <li class="list-group-item d-flex align-items-center gap-3">
+        <span class="time-range font-monospace small text-body-secondary text-nowrap">
+          {{ result.item.start_time.strftime("%H:%M") }}&ndash;{{ result.item.end_time.strftime("%H:%M") }}
+        </span>
+        <span class="flex-grow-1">{{ result.item.title }}</span>
+        {% if result.success %}
+          <span class="badge text-bg-success">Created</span>
+        {% else %}
+          <span class="badge text-bg-danger">Failed</span>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <div class="d-flex gap-2 flex-wrap">
+    <a href="{{ url_for('index') }}" class="btn btn-primary">Create more events</a>
+    <a href="{{ url_for('event_template_edit', template_id=template.id) }}" class="btn btn-outline-secondary">Edit this template</a>
   </div>
 </div>
 {% endblock %}

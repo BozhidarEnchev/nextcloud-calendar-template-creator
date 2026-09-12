@@ -3,13 +3,11 @@
 {% block title %}{{ heading }}{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-6">
-    <h1>{{ heading }}</h1>
-    <p>{{ message }}</p>
-    {% if link_url %}
-      <a href="{{ link_url }}">{{ link_text }}</a>
-    {% endif %}
-  </div>
+<div class="page-narrow text-center py-5">
+  <h1 class="h3 mb-3">{{ heading }}</h1>
+  <p class="text-body-secondary mb-4">{{ message }}</p>
+  {% if link_url %}
+    <a href="{{ link_url }}" class="btn btn-primary">{{ link_text }}</a>
+  {% endif %}
 </div>
 {% endblock %}

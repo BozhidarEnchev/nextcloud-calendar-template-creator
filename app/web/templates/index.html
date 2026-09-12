@@ -1,45 +1,94 @@
 {% extends "base.html" %}
+{% set active_page = "home" %}
 
 {% block title %}Home{% endblock %}
 
 {% block content %}
+<div class="page-medium">
+  <h1 class="h3 mb-4">Hello, {{ current_user.username }}</h1>
 
-<p>Hello, {{ current_user.username }}.</p>
-
-<form method="post" action="{{ url_for('logout') }}" class="d-inline">
-  <button type="submit" class="btn btn-warning">Log out</button>
-</form>
-<form method="post" action="{{ url_for('user_delete') }}" class="d-inline"
-      onsubmit="return confirm('Delete your account and everything in it? This cannot be undone.');">
-  <button type="submit" class="btn btn-outline-danger">Delete my account</button>
-</form>
-{% if current_user.nextcloud_account %}
-  <p><a href="{{ url_for('nextcloud_account') }}">Nextcloud: connected as {{ current_user.nextcloud_account.username }}</a></p>
-  <p><a href="{{ url_for('event_templates') }}">Templates</a></p>
-
-  {% if event_templates %}
-    <hr>
-    <h5>Create events from a template</h5>
-    <form method="post" action="{{ url_for('events_create') }}" class="row g-2 align-items-end">
-      <div class="col-auto">
-        <label for="template-field" class="form-label">Template</label>
-        <select name="template_id" id="template-field" class="form-select" required>
-          {% for template in event_templates %}
-            <option value="{{ template.id }}">{{ template.name }}</option>
-          {% endfor %}
-        </select>
+  <div class="row g-3 mb-4">
+    <div class="col-sm-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+          <h2 class="h6 text-body-secondary text-uppercase mb-2">Nextcloud</h2>
+          {% if current_user.nextcloud_account %}
+            <p class="mb-2">
+              <span class="badge text-bg-success">Connected</span>
+              as <strong>{{ current_user.nextcloud_account.username }}</strong>
+            </p>
+            <a href="{{ url_for('nextcloud_account') }}" class="small mt-auto">Manage connection</a>
+          {% else %}
+            <p class="mb-2"><span class="badge text-bg-secondary">Not connected</span></p>
+            <a href="{{ url_for('nextcloud_account') }}" class="btn btn-primary btn-sm mt-auto align-self-start">Connect your account</a>
+          {% endif %}
+        </div>
       </div>
-      <div class="col-auto">
-        <label for="date-field" class="form-label">Date</label>
-        <input type="date" name="event_date" id="date-field" class="form-control" required>
+    </div>
+    <div class="col-sm-6">
+      <div class="card shadow-sm h-100">
+        <div class="card-body d-flex flex-column">
+          <h2 class="h6 text-body-secondary text-uppercase mb-2">Templates</h2>
+          <p class="mb-2">
+            <span class="fs-4 fw-semibold">{{ event_templates|length }}</span>
+            {{ "template" if event_templates|length == 1 else "templates" }}
+          </p>
+          <a href="{{ url_for('event_templates') }}" class="small mt-auto">Manage templates</a>
+        </div>
       </div>
-      <div class="col-auto">
-        <button type="submit" class="btn btn-success">Create events</button>
-      </div>
-    </form>
-  {% endif %}
-{% else %}
-  <p><a href="{{ url_for('nextcloud_account') }}">Connect your Nextcloud account</a></p>
-{% endif %}
+    </div>
+  </div>
 
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h2 class="h5 card-title mb-3">Create events from a template</h2>
+
+      {% if not current_user.nextcloud_account %}
+        <p class="text-body-secondary mb-0">
+          Connect your Nextcloud account first &mdash; events are created directly in your calendars there.
+        </p>
+      {% elif not event_templates %}
+        <p class="text-body-secondary">
+          You don't have any templates yet. A template is a reusable set of events
+          (like &ldquo;Work day&rdquo;) that you can drop onto any date.
+        </p>
+        <a href="{{ url_for('event_templates_new') }}" class="btn btn-primary">Create your first template</a>
+      {% else %}
+        <p class="text-body-secondary">
+          Pick a template and a day. Each event in the template is added to its calendar on that date.
+        </p>
+        <form method="post" action="{{ url_for('events_create') }}" class="row g-2 align-items-end">
+          <div class="col-md-5">
+            <label for="template-field" class="form-label">Template</label>
+            <select name="template_id" id="template-field" class="form-select" required>
+              {% for template in event_templates %}
+                <option value="{{ template.id }}">{{ template.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="col-md-4">
+            <label for="date-field" class="form-label">Date</label>
+            <input type="date" name="event_date" id="date-field" class="form-control" required>
+          </div>
+          <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">Create events</button>
+          </div>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  // Default the date picker to today, using the browser's local date rather
+  // than the server's (which may run in UTC and be a day off around midnight).
+  const dateField = document.getElementById("date-field");
+  if (dateField && !dateField.value) {
+    const now = new Date();
+    const pad = (n) => String(n).padStart(2, "0");
+    dateField.value = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+  }
+</script>
 {% endblock %}

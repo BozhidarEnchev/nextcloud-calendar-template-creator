@@ -1,0 +1,22 @@
+/* Small touches on top of Bootstrap. Everything else is Bootstrap utilities. */
+
+body {
+  background-color: var(--bs-tertiary-bg);
+}
+
+/* Centered content columns, so pages don't stretch across a wide monitor. */
+.page-narrow,
+.page-medium {
+  margin-inline: auto;
+}
+.page-narrow { max-width: 26rem; }
+.page-medium { max-width: 44rem; }
+
+.form-label {
+  font-weight: 500;
+}
+
+/* Time ranges in item lists: keep digits the same width so rows line up. */
+.time-range {
+  font-variant-numeric: tabular-nums;
+}

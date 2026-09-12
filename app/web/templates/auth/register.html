@@ -3,20 +3,33 @@
 {% block title %}Register{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  {% if error %}
-    <p style="color: red;">{{ error }}</p>
-  {% endif %}
-  <form method="post" class="col-4" name="register">
-    <div class="mb-3">
-      <label for="username-field" class="form-label">Username</label>
-      <input type="text" name="username" class="form-control" id="username-field">
+<div class="page-narrow">
+  <div class="card shadow-sm">
+    <div class="card-body p-4">
+      <h1 class="h4 mb-1">Create an account</h1>
+      <p class="text-body-secondary small mb-4">You'll connect your Nextcloud account after signing up.</p>
+
+      {% if error %}
+        <div class="alert alert-danger" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <form method="post" action="{{ url_for('register') }}" name="register">
+        <div class="mb-3">
+          <label for="username-field" class="form-label">Username</label>
+          <input type="text" name="username" class="form-control" id="username-field"
+                 autocomplete="username" autofocus required>
+        </div>
+        <div class="mb-4">
+          <label for="password-field" class="form-label">Password</label>
+          <input type="password" name="password" class="form-control" id="password-field"
+                 autocomplete="new-password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Register</button>
+      </form>
     </div>
-    <div class="mb-3">
-      <label for="password-field" class="form-label">Password</label>
-      <input type="password" name="password" class="form-control" id="password-field">
+    <div class="card-footer bg-transparent text-center small py-3">
+      Already have an account? <a href="{{ url_for('login-page') }}">Log in</a>
     </div>
-    <button type="submit" class="btn btn-success">Register</button>
-  </form>
+  </div>
 </div>
 {% endblock %}

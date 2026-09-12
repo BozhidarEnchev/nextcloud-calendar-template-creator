@@ -1,23 +1,29 @@
 {% extends "base.html" %}
+{% set active_page = "templates" %}
 
-{% block title %}Event templates{% endblock %}
+{% block title %}Templates{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
-  <div class="col-6">
+<div class="page-medium">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Your templates</h1>
+    <a href="{{ url_for('event_templates_new') }}" class="btn btn-primary">New template</a>
+  </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
-      <h4 class="mb-0">Your event templates</h4>
-      <a href="{{ url_for('event_templates_new') }}" class="btn btn-success btn-sm">+ New template</a>
-    </div>
-
-    {% if event_templates %}
-      <ul id="templates-list" class="list-group">
-        {% for template in event_templates %}
-          <li id="template-{{ template.id }}" class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="{{ url_for('event_template_edit', template_id=template.id) }}" class="text-decoration-none">
+  {% if event_templates %}
+    <ul id="templates-list" class="list-group shadow-sm">
+      {% for template in event_templates %}
+        <li id="template-{{ template.id }}" class="list-group-item d-flex justify-content-between align-items-center gap-3 py-3">
+          <div>
+            <a href="{{ url_for('event_template_edit', template_id=template.id) }}" class="fw-semibold text-decoration-none">
               {{ template.name }}
             </a>
+            <div class="small text-body-secondary">
+              {{ template.items|length }} {{ "event" if template.items|length == 1 else "events" }}
+            </div>
+          </div>
+          <div class="d-flex gap-2">
+            <a href="{{ url_for('event_template_edit', template_id=template.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
             <button
               type="button"
               class="btn btn-sm btn-outline-danger"
@@ -28,14 +34,20 @@
             >
               Delete
             </button>
-          </li>
-        {% endfor %}
-      </ul>
-    {% else %}
-      <p class="text-muted">No templates yet &mdash; create one to get started.</p>
-    {% endif %}
-
-    <a href="{{ url_for('index') }}" class="d-block pt-3 text-decoration-none">Back to home</a>
-  </div>
+          </div>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <div class="card shadow-sm">
+      <div class="card-body text-center py-5">
+        <p class="text-body-secondary mb-3">
+          No templates yet. A template is a reusable set of events &mdash; like &ldquo;Work day&rdquo; &mdash;
+          that you can add to any date in one go.
+        </p>
+        <a href="{{ url_for('event_templates_new') }}" class="btn btn-primary">Create your first template</a>
+      </div>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}
