@@ -20,7 +20,7 @@ def test_connection(caldav_user: str, app_pasword: bytes) -> bool:
     client = build_client(caldav_user, app_pasword)
     try:
         client.principal()
-    except caldav.lib.error.DAVError:
+    except Exception:
         return False
     return True
 
@@ -29,7 +29,7 @@ def get_user_calendars(caldav_user: str, app_pasword: bytes) -> list[caldav.coll
     client = build_client(caldav_user, app_pasword)
     try:
         principal = client.principal()
-    except caldav.lib.error.DAVError:
+    except Exception:
         return False
     return principal.calendars()
 
@@ -57,6 +57,6 @@ def create_event(caldav_user: str, app_pasword: bytes, item: EventTemplateItem, 
         ical.add_component(vevent)
 
         calendar.save_event(ical.to_ical().decode("utf-8"))
-    except caldav.lib.error.DAVError:
+    except Exception:
         return False
     return True
