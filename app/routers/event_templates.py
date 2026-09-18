@@ -106,13 +106,12 @@ async def edit_event_template(
         )
 
     context["event_template"] = event_template
-    context["calendars"] = []
-    try:
-        calendars = get_user_calendars(
-            caldav_user=current_user.nextcloud_account.username,
-            app_pasword=current_user.nextcloud_account.encrypted_password
-        )
-    except Exception:
+    context["calendars"] = get_user_calendars(
+        caldav_user=current_user.nextcloud_account.username,
+        app_pasword=current_user.nextcloud_account.encrypted_password
+    )
+
+    if not context["calendars"]:
         return templates.TemplateResponse(
             request=request,
             name="errors/message.html",
@@ -124,8 +123,6 @@ async def edit_event_template(
             },
             status_code=status.HTTP_404_NOT_FOUND,
         )
-    if calendars:
-        context["calendars"] = calendars
 
     return templates.TemplateResponse(
         request=request,
